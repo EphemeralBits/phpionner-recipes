@@ -1,0 +1,17 @@
+server {
+    listen 80;
+    listen [::]:80;
+
+    server_name {{phpionner/domain_name}};
+    root /home/{{phpionner/user_name}}/{{phpionner/domain_name}};
+
+    charset utf-8;
+
+    location / {
+        try_files \$uri \$uri/ /index.php?\$query_string;
+    }
+
+    location ~ /\.(?!well-known).* {
+        deny all;
+    }
+}

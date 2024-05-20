@@ -1,0 +1,10 @@
+[program:{{phpionner/domain_name}}-{{phpionner/laravel_queue_name}}]
+process_name=%(program_name)s
+directory=/home/{{phpionner/user_name}}/{{phpionner/domain_name}}/current
+command={{phpionner/laravel_queue_command}}
+autostart=true
+autorestart=true
+user={{phpionner/user_name}}
+redirect_stderr=true
+stdout_logfile=/home/{{phpionner/user_name}}/{{phpionner/domain_name}}/shared/storage/logs/{{phpionner/laravel_queue_name}}.log
+stopwaitsecs=3600
