@@ -1,0 +1,23 @@
+{
+    "name": "ephemeralbits/phpionner-recipes",
+    "type": "library",
+    "description": "PHPionner recipes",
+    "keywords": [
+        "PHPionner",
+        "deployer",
+        "recipes"
+    ],
+    "license": "MIT",
+    "require": {
+        "php": "^8.3",
+        "deployer/deployer": "^v7.4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "EphemeralBits\\PhpionnerRecipes\\": "src/"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
