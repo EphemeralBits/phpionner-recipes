@@ -42,6 +42,6 @@ task('phpionner/postgres:create', function () {
     run("sudo -u postgres psql -v \"ON_ERROR_STOP=1\" <<< $'GRANT ALL PRIVILEGES ON DATABASE {{phpionner/postgres_name}} TO {{phpionner/postgres_user}};'");
 
     info('');
-    info('PostgreSQL password: ' . get('postgres_password'));
+    info('PostgreSQL password: ' . get('phpionner/postgres_password'));
     info('');
 })->oncePerNode();
