@@ -24,6 +24,9 @@ function requestSslCertificate(
         case 'Local webserver':
             run("sudo certbot certonly --webroot -w $serverRoot -d $domainName$domainNameWwwParam -m {{phpionner/ssl_certbot_email}} --agree-tos --no-eff-email");
             break;
+        case 'AWS':
+            run("sudo certbot certonly --dns-route53 -d $domainName$domainNameWwwParam -m {{phpionner/ssl_certbot_email}} --agree-tos --no-eff-email");
+            break;
         case 'Cloudflare':
             run("sudo certbot certonly --dns-cloudflare --dns-cloudflare-credentials /root/.secrets/cloudflare.ini --dns-cloudflare-propagation-seconds 60 -d $domainName$domainNameWwwParam -m {{phpionner/ssl_certbot_email}} --agree-tos --no-eff-email");
             break;
@@ -36,13 +39,18 @@ set('phpionner/ssl_certbot_email', fn() => ask(' In which email address should L
 set('phpionner/ssl_certbot_method', function () {
     $options = [
         'Local webserver',
+        'AWS',
         'Cloudflare',
     ];
     return askChoice(' Which challenge method should be used for Let\'s Encrypt? ', $options, 0);
 });
 
-set('phpionner/cloudflare', fn() => askConfirmation(' Do you want to configure Cloudflare API token? ', false));
-set('phpionner/cloudflare_token', function () {
+set('phpionner/ssl_aws', fn() => askConfirmation(' Do you want to configure AWS secrets for issuing SSL certificates? ', false));
+set('phpionner/ssl_aws_access_key_id', fn() => ask(' What is your AWS access key id? '));
+set('phpionner/ssl_aws_secret_access_key', fn() => ask(' What is your AWS secret access key? '));
+
+set('phpionner/ssl_cloudflare', fn() => askConfirmation(' Do you want to configure Cloudflare API token for issuing SSL certificates? ', false));
+set('phpionner/ssl_cloudflare_token', function () {
     info('To use Cloudflare API, you need to create a token (https://dash.cloudflare.com/profile/api-tokens) with the following permissions: Zone:DNS:Edit');
     return ask(' What is your Cloudflare API token? ');
 });
@@ -55,12 +63,20 @@ task('phpionner/ssl:setup', function () {
 
     run('snap install --classic certbot', ['env' => ['DEBIAN_FRONTEND' => 'noninteractive'], 'timeout' => 900]);
     run('snap set certbot trust-plugin-with-root=ok');
-    run('snap install certbot-dns-cloudflare');
-    run("mkdir ~/.secrets");
 
-    if (get('phpionner/cloudflare')) {
-        run("echo 'dns_cloudflare_api_token = {{phpionner/cloudflare_token}}' >> ~/.secrets/cloudflare.ini");
-        run("chmod 600 ~/.secrets/cloudflare.ini");
+    if (get('phpionner/ssl_aws')) {
+        run('snap install certbot-dns-route53');
+        run('mkdir -p ~/.aws');
+        $config = loadTemplate('aws_config.tmpl');
+        run("sudo sh -c 'echo \"$config\" > ~/.aws/config'");
+        run('chmod 600 ~/.aws/config');
+    }
+
+    if (get('phpionner/ssl_cloudflare')) {
+        run('snap install certbot-dns-cloudflare');
+        run('mkdir ~/.secrets');
+        $config = loadTemplate('cloudflare.tmpl');
+        run("sudo sh -c 'echo \"$config\" > ~/.secrets/cloudflare.ini'");
     }
 
     run("mkdir -p /etc/letsencrypt/renewal-hooks/deploy");

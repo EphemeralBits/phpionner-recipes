@@ -17,9 +17,7 @@ function askConfigurationParameters(array $parameters): void
         $result = get($parameter);
 
         if (count($subParameters) > 0 && $result === true) {
-            foreach ($subParameters as $subParam) {
-                get($subParam);
-            }
+            askConfigurationParameters($subParameters);
         }
     }
 }

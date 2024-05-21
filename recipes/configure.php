@@ -29,9 +29,18 @@ desc('Configure wizard');
 task('phpionner/configure:wizard', function () {
     $parameters = [
         'phpionner/php_version',
-        'phpionner/nodejs_install' => ['phpionner/nodejs_version'],
-        'phpionner/ssl_certbot_install',
-        'phpionner/cloudflare' => ['phpionner/cloudflare_token'],
+        'phpionner/nodejs_install' => [
+            'phpionner/nodejs_version',
+        ],
+        'phpionner/ssl_certbot_install' => [
+            'phpionner/ssl_aws' => [
+                'phpionner/ssl_aws_access_key_id',
+                'phpionner/ssl_aws_secret_access_key',
+            ],
+            'phpionner/ssl_cloudflare' => [
+                'phpionner/ssl_cloudflare_token',
+            ],
+        ],
         'phpionner/postgresql_install',
         'phpionner/redis_install',
     ];
