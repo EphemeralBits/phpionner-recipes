@@ -21,7 +21,7 @@ function requestSslCertificate(
     $domainNameWwwParam = $addWww ? ' -d www.' . $domainName : '';
 
     switch (get('phpionner/ssl_certbot_method')) {
-        case 'local webserver':
+        case 'Local webserver':
             run("sudo certbot certonly --webroot -w $serverRoot -d $domainName$domainNameWwwParam -m {{phpionner/ssl_certbot_email}} --agree-tos --no-eff-email");
             break;
         case 'Cloudflare':
