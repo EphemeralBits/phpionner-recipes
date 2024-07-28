@@ -29,7 +29,7 @@ task('phpionner/laravel:schedule:setup', function () {
         return;
     }
 
-    $command = 'cd /home/{{phpionner/user_name}}/{{phpionner/domain_name}}/current/artisan && php artisan schedule:run';
+    $command = 'cd /home/{{phpionner/user_name}}/{{phpionner/domain_name}}/current && php artisan schedule:run';
 
     if (test("[[ $(crontab -l | egrep -v \"^(#|$)\" | grep -q '$command'; echo $?) == 1 ]]")) {
         run("(crontab -l ; echo \"* * * * * $command >> /dev/null 2>&1\")| crontab -");
